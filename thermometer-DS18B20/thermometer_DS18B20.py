@@ -1,10 +1,9 @@
 #!/usr/bin/python
 #import os
 import glob
-import time
-import httplib, urllib
-import time
-from time import localtime, strftime
+#import time
+#import httplib, urllib
+from time import localtime, strftime, sleep
  
 #os.system('modprobe w1-gpio')
 #os.system('modprobe w1-therm')
@@ -22,7 +21,7 @@ def read_temp_raw():
 def read_temp():
     lines = read_temp_raw()
     while lines[0].strip()[-3:] != 'YES':
-        time.sleep(0.2)
+        sleep(0.2)
         lines = read_temp_raw()
     equals_pos = lines[1].find('t=')
     if equals_pos != -1:
@@ -30,20 +29,7 @@ def read_temp():
         temp_c = float(temp_string) / 1000.0
         return temp_c
 
-def doit():
-    temp_c = read_temp()
-    params = urllib.urlencode({'field1': temp_c,'key':'0RI7KXKAPBE9V3YL'})
-    headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
-    conn = httplib.HTTPConnection("api.thingspeak.com:80")
-    try:
-        conn.request("POST", "/update", params, headers)
-        response = conn.getresponse()
-        print strftime("%d %b %Y %H:%M:%S", localtime()), response.status, response.reason, temp_c
-        data = response.read()
-        conn.close()
-    except:
-        print "connection failed"
-
 if __name__ == "__main__":
-    doit()
+    temp_c = read_temp()
+    print temp_c
 

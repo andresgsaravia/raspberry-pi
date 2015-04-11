@@ -19,23 +19,11 @@ def RCtime (RCpin):
  
     GPIO.setup(RCpin, GPIO.IN)
     # This takes about 1 millisecond per loop cycle
-    while (GPIO.input(RCpin) == GPIO.LOW):
+    while (GPIO.input(RCpin) == GPIO.LOW and reading < 5000):
         reading += 1
     return reading
- 
-def readAndUpload():
-    rct = RCtime(18) # Read RC timing using pin #18
-    params = urllib.urlencode({'field2': rct,'key':'0RI7KXKAPBE9V3YL'})
-    headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
-    conn = httplib.HTTPConnection("api.thingspeak.com:80")
-    try:
-        conn.request("POST", "/update", params, headers)
-        response = conn.getresponse()
-        print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), response.status, response.reason, rct
-        data = response.read()
-        conn.close()
-    except:
-        print "connection failed"
 
 if __name__ == "__main__":
-    readAndUpload()
+    rct = RCtime(18)
+    print rct
+
